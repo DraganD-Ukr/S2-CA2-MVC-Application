@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using S2_CA2_MVC_MovieApp.Data;
 using S2_CA2_MVC_MovieApp.Models;
+using S2_CA2_MVC_MovieApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,10 +15,15 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+
 // Add Identity services
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole>(opt => {
+        opt.SignIn.RequireConfirmedAccount = false;
+    })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+    
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 // Add Razor Pages and MVC
 builder.Services.AddRazorPages();
@@ -43,8 +50,12 @@ if (app.Environment.IsDevelopment())
     
         // Create the database and apply the schema
         dbContext.Database.EnsureCreated(); // This ensures the tables are created
-
-        await dbContext.SeedUsersAsync(services); // Make sure SeedUsersAsync is properly implemented
+    
+        // Seed only if the database is empty
+        if (!dbContext.Users.Any()) {
+            await dbContext.SeedUsersAsync(services); // Make sure SeedUsersAsync is properly implemented
+        }
+        
     }
 }
 else

@@ -54,20 +54,8 @@ namespace S2_CA2_MVC_MovieApp.Data
                 new Movie { Id = 9, Title = "The Dark Knight", Description = "Batman battles the Joker to save Gotham City.", ReleaseDate = new DateTime(2008, 7, 18, 0, 0, 0, DateTimeKind.Utc), GenreId = 8 },
                 new Movie { Id = 10, Title = "Finding Nemo", Description = "A clownfish searches for his lost son.", ReleaseDate = new DateTime(2003, 5, 30, 0, 0, 0, DateTimeKind.Utc), GenreId = 9 }
             );
+            
 
-            // Seed Reviews
-            modelBuilder.Entity<Review>().HasData(
-                new Review { Id = 1, MovieId = 1, Rating = 9, Comment = "Amazing action scenes!" },
-                new Review { Id = 2, MovieId = 2, Rating = 8, Comment = "Super funny!" },
-                new Review { Id = 3, MovieId = 3, Rating = 10, Comment = "One of the best movies ever." },
-                new Review { Id = 4, MovieId = 4, Rating = 9, Comment = "Incredible visuals and storytelling." },
-                new Review { Id = 5, MovieId = 5, Rating = 7, Comment = "Scary and well-directed!" },
-                new Review { Id = 6, MovieId = 6, Rating = 10, Comment = "A beautiful and tragic love story." },
-                new Review { Id = 7, MovieId = 7, Rating = 10, Comment = "An epic adventure!" },
-                new Review { Id = 8, MovieId = 8, Rating = 9, Comment = "Mind-blowing and deep." },
-                new Review { Id = 9, MovieId = 9, Rating = 10, Comment = "Best superhero movie ever!" },
-                new Review { Id = 10, MovieId = 10, Rating = 8, Comment = "Great animation and story." }
-            );
         }
 
         private async Task SeedRoleAsync(RoleManager<IdentityRole> roleManager, string roleName)
