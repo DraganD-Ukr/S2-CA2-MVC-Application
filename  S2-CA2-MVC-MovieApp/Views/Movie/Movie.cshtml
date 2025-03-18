@@ -1,0 +1,81 @@
+﻿@model S2_CA2_MVC_MovieApp.ViewModel.SearchViewModel
+
+
+
+@{ 
+    var movies = Model.Movies;
+    var searchTerm = Model.SearchTerm;
+    ViewData["Title"] = "Search Movies";
+    
+}
+
+<div class="container mt-4">
+    <h1 class="text-center">Search Movies</h1>
+    <p class="text-center">Find your favorite movies, see reviews, and ratings.</p>
+
+    <!-- Search Form -->
+    <form asp-controller="Movie" asp-action="Search" method="get" class="mt-4">
+        <div class="input-group">
+            <input type="text" class="form-control" name="searchTerm" placeholder="Enter movie title or description">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
+    <hr />
+
+    <!-- Display Movies -->
+    @if (Model != null) {
+        
+        @if (!string.IsNullOrEmpty(searchTerm))
+        {
+            <h1 class="mt-4">Search Results for: @searchTerm</h1>
+        }
+        else {
+            <h1 class="mt-4 bg-primary gradient-text text-center p-3 rounded">Top 10 freshest movies</h1>
+        }
+
+        <table class="table table-bordered table-striped mt-3">
+            <thead class="table-dark">
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Genre</th>
+                <th>Release Date</th>
+                <th>Average Rating</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var movie in movies)
+            {
+                <tr>
+                    <td>@movie.Title</td>
+                    <td>@movie.Description</td>
+                    <td>@movie.Genre.Name</td>
+                    <td>@movie.ReleaseDate.ToString("dd MMM yyyy")</td>
+                    <td>
+                        @{
+                            var avgRating = movie.Reviews.Any() ? movie.Reviews.Average(r => r.Rating) : 0;
+                        }
+                        <span class="badge @(avgRating >= 7 ? "bg-success" : "bg-warning")">
+                            @avgRating.ToString("0.0") / 10
+                        </span>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-center mt-4">No movies found. Try a different search term.</p>
+    }
+</div>
+<style>
+    .gradient-text {
+        background: linear-gradient(135deg, #529dff, #c8f533); /* Gradient from pink to orange */
+        -webkit-background-clip: text; /* Ensures the gradient is applied to the text */
+        color: transparent; /* Makes the text color transparent, allowing the gradient to show */
+    }
+    
+</style>
+    
