@@ -9,4 +9,8 @@ public class Movie
     public int GenreId { get; set; } 
     public Genre Genre { get; set; } = null!;
     public List<Review> Reviews { get; set; } = new();
+
+    public override string ToString() {
+        return $"Id: {Id}, Title: {Title}, Description: {Description}, ReleaseDate: {ReleaseDate}, GenreId: {GenreId}";
+    }
 }

@@ -95,7 +95,40 @@ namespace S2_CA2_MVC_MovieApp.Data
             await SeedRoleAsync(roleManager, "User");
 
             await SeedUserAsync(userManager, "admin@example.com", "admin@example.com", "Admin");
-            await SeedUserAsync(userManager, "user@example.com", "user@example.com", "User");
+            await SeedUserAsync(userManager, "user1@example.com", "user1@example.com", "User");
+            await SeedUserAsync(userManager, "user2@example.com", "user2@example.com", "User");
+            await SeedUserAsync(userManager, "user3@example.com", "user3@example.com", "User");
+            await SeedUserAsync(userManager, "user4@example.com", "user4@example.com", "User");
+            await SeedUserAsync(userManager, "user5@example.com", "user5@example.com", "User");
         }
+
+        public async Task SeedReviewsAsync(ApplicationDbContext context, UserManager<User> userManager)
+        {
+            if (!context.Reviews.Any())
+            {
+                // Get User IDs dynamically by username
+                var user1 = await userManager.FindByNameAsync("user1@example.com");
+                var user2 = await userManager.FindByNameAsync("user2@example.com");
+                var user3 = await userManager.FindByNameAsync("user3@example.com");
+
+                var reviews = new List<Review>
+                {
+                    new Review { Id = 1, MovieId = 1, UserId = user1?.Id, Rating = 9, Comment = "Amazing action sequences!" },
+                    new Review { Id = 2, MovieId = 2, UserId = user1?.Id, Rating = 8, Comment = "Hilarious and entertaining." },
+                    new Review { Id = 3, MovieId = 3, UserId = user1?.Id, Rating = 10, Comment = "One of the best movies ever!" },
+                    new Review { Id = 4, MovieId = 4, UserId = user2?.Id, Rating = 9, Comment = "Mind-blowing visuals and concept." },
+                    new Review { Id = 5, MovieId = 5, UserId = user2?.Id, Rating = 7, Comment = "Scary and intense." },
+                    new Review { Id = 6, MovieId = 6, UserId = user3?.Id, Rating = 10, Comment = "Heartbreaking and beautiful." },
+                    new Review { Id = 7, MovieId = 7, UserId = user3?.Id, Rating = 9, Comment = "Epic fantasy adventure!" },
+                    new Review { Id = 8, MovieId = 6, UserId = user3?.Id, Rating = 10, Comment = "Beautiful!!." },
+                    new Review { Id = 9, MovieId = 7, UserId = user3?.Id, Rating = 9, Comment = "Enjoyed it!" }
+                };
+
+                await context.Reviews.AddRangeAsync(reviews);
+                await context.SaveChangesAsync();
+            }
+        }
+
+
     }
 }

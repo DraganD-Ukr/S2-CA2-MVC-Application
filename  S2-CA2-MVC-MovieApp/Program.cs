@@ -39,11 +39,11 @@ var app = builder.Build();
 // Configure HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
-    // Ensure database is created without migrations
+    
     using (var scope = app.Services.CreateScope())
     {
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        context.Database.EnsureCreated(); // This will create the database if not already created
+        context.Database.EnsureCreated(); // Create the database if not already created
         
         var services = scope.ServiceProvider;
         var dbContext = services.GetRequiredService<ApplicationDbContext>();
@@ -53,7 +53,11 @@ if (app.Environment.IsDevelopment())
     
         // Seed only if the database is empty
         if (!dbContext.Users.Any()) {
-            await dbContext.SeedUsersAsync(services); // Make sure SeedUsersAsync is properly implemented
+            await dbContext.SeedUsersAsync(services); 
+        }
+
+        if (!dbContext.Reviews.Any()) {
+            await dbContext.SeedReviewsAsync(dbContext, services.GetRequiredService<UserManager<User>>());
         }
         
     }

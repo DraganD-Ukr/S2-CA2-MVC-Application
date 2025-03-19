@@ -31,6 +31,7 @@ namespace S2_CA2_MVC_MovieApp.Controllers
             {
                 movies = _dbContext.Movies
                     .Include(m => m.Genre)
+                    .Include(m => m.Reviews)
                     .OrderBy(m => m.Title)
                     .Take(10)
                     .ToList();
@@ -41,12 +42,13 @@ namespace S2_CA2_MVC_MovieApp.Controllers
             {
                 movies = _dbContext.Movies
                     .Include(m => m.Genre) // Ensure Genre is included
+                    .Include(m => m.Reviews) // Ensure Reviews are included
                     .Where(m => m.Title.ToLower().Contains(searchTerm.ToLower()) || 
                                 m.Description.ToLower().Contains(searchTerm.ToLower()))
                     .OrderBy(m => m.Title)
                     .ToList();
 
-                _logger.LogDebug($"Search term: {searchTerm}, Found movies: {string.Join(", ", movies.Select(m => m.Title))}");
+                _logger.LogInformation($"Search term: {searchTerm}, Found movies: {string.Join(", ", movies.Select(m => m.ToString()))}");
             }
             
             var searchViewModel = new SearchViewModel(movies, searchTerm);
