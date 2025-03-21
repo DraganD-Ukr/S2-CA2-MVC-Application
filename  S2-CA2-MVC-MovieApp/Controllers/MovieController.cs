@@ -27,14 +27,15 @@ namespace S2_CA2_MVC_MovieApp.Controllers
         {
             List<Movie> movies;
 
-            if (string.IsNullOrEmpty(searchTerm))
-            {
+            if (string.IsNullOrEmpty(searchTerm)) {
                 movies = _dbContext.Movies
                     .Include(m => m.Genre)
                     .Include(m => m.Reviews)
-                    .OrderBy(m => m.Title)
+                    .OrderByDescending(m => m.ReleaseDate)
                     .Take(10)
                     .ToList();
+                    
+                    
 
                 _logger.LogDebug("Returning first 10 movies from database.");
             }
@@ -56,6 +57,22 @@ namespace S2_CA2_MVC_MovieApp.Controllers
             searchViewModel.Movies = movies;
             
             return View("Movie", searchViewModel);
+        }
+
+        public IActionResult Details(int id) {
+            Movie? movie = _dbContext.Movies
+                .Include(m => m.Genre)
+                .Include(m => m.Reviews)
+                .ThenInclude(r => r.User)
+                .FirstOrDefault(m => m.Id == id);
+                
+            if (movie == null) {
+                return NotFound();
+            } 
+            
+            _logger.LogInformation(movie.ToString());
+
+            return View("MovieDetails", movie);
         }
     }
 }
