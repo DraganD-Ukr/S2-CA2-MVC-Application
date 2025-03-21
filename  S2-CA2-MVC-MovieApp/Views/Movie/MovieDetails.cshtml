@@ -1,7 +1,6 @@
 ﻿@model S2_CA2_MVC_MovieApp.Models.Movie
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<User> SignInManager
-
 @{
     // Define the helper method to extract the YouTube embed URL
     Func<string, string> GetEmbedUrl = (string url) =>
@@ -30,7 +29,11 @@
     var reviews = Model?.Reviews ?? new List<Review>();
     
     var averageRating = reviews.Any() ? reviews.Average(r => r.Rating) : 0;
+
+    // Check if the current user has already rated the movie
+    var userReview = reviews.FirstOrDefault(r => r.UserId == SignInManager.UserManager.GetUserId(User));
 }
+
 
 
 
@@ -160,31 +163,38 @@
             <div class="review-section">
                 @if (SignInManager.IsSignedIn(User))
                 {
-                    <h5>Add your review:</h5>
-                    <div class="review-input">
-                        <form action="@Url.Action("Create", "Reviews")" method="post">
-                            <input type="hidden" name="movieId" value="@Model?.Id" />
-                            <div class="form-group mt-4 ">
-                                <div class="star-rating">
-                                    <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="5 stars"></label>
-                                    <input type="radio" id="star4half" name="rating" value="4.5" /><label for="star4half" class="half" title="4.5 stars"></label>
-                                    <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars"></label>
-                                    <input type="radio" id="star3half" name="rating" value="3.5" /><label for="star3half" class="half" title="3.5 stars"></label>
-                                    <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 stars"></label>
-                                    <input type="radio" id="star2half" name="rating" value="2.5" /><label for="star2half" class="half" title="2.5 stars"></label>
-                                    <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars"></label>
-                                    <input type="radio" id="star1half" name="rating" value="1.5" /><label for="star1half" class="half" title="1.5 stars"></label>
-                                    <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star"></label>
-                                    <input type="radio" id="starhalf" name="rating" value="0.5" /><label for="starhalf" class="half" title="0.5 stars"></label>
+                    @if (userReview != null)
+                    {
+                        <p>You have already rated this movie with a rating of @userReview.Rating/10.</p>
+                    }
+                    else
+                    {
+                        <h5>Add your review:</h5>
+                        <div class="review-input">
+                            <form action="@Url.Action("AddReview", "Review")" method="post">
+                                <input type="hidden" name="movieId" value="@Model?.Id" />
+                                <div class="form-group mt-4">
+                                    <div class="star-rating">
+                                        <input type="radio" id="star10" name="rating" value="9" /><label for="star10" title="10 stars"></label>
+                                        <input type="radio" id="star9" name="rating" value="8" /><label for="star9" class="half" title="8 stars"></label>
+                                        <input type="radio" id="star8" name="rating" value="8" /><label for="star8" title="8 stars"></label>
+                                        <input type="radio" id="star7" name="rating" value="7" /><label for="star7" class="half" title="7 stars"></label>
+                                        <input type="radio" id="star6" name="rating" value="6" /><label for="star6" title="6 stars"></label>
+                                        <input type="radio" id="star5" name="rating" value="5" /><label for="star5" class="half" title="5 stars"></label>
+                                        <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars"></label>
+                                        <input type="radio" id="star3" name="rating" value="3" /><label for="star3" class="half" title="3 stars"></label>
+                                        <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars"></label>
+                                        <input type="radio" id="star1" name="rating" value="1" /><label for="star1" class="half" title="1 star"></label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="comment">Comment:</label>
-                                <textarea name="comment" id="comment" class="form-control"></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-sm btn-primary">Submit Review</button>
-                        </form>
-                    </div>
+                                <div class="form-group">
+                                    <label for="comment">Comment:</label>
+                                    <textarea name="comment" id="comment" class="form-control"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-primary">Submit Review</button>
+                            </form>
+                        </div>
+                    }
                 }
 
                 <h5 class="mt-5">Reviews:</h5>
@@ -195,15 +205,13 @@
                         {
                             <div class="card my-3">
                                 <div class="card-body p-3">
-                                    @{
-                                        if (review.User != null && review.User.UserName != null)
-                                        {
-                                            <h6 class="card-title">@review.User.UserName</h6>
-                                        }
-                                        else
-                                        {
-                                            <h6 class="card-title">"Anonymous"</h6>
-                                        }
+                                    @if (review.User != null && review.User.UserName != null)
+                                    {
+                                        <h6 class="card-title">@review.User.UserName</h6>
+                                    }
+                                    else
+                                    {
+                                        <h6 class="card-title">"Anonymous"</h6>
                                     }
                                     <p><strong>Rating:</strong> @review.Rating / 10</p>
                                     <p>@review.Comment ?? "No comment"</p>
@@ -217,6 +225,7 @@
                     }
                 </div>
             </div>
+
 
             <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-4">Back to Movies List</a>
         </div>

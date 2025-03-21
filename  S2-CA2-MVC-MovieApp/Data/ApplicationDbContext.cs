@@ -113,15 +113,15 @@ namespace S2_CA2_MVC_MovieApp.Data
 
                 var reviews = new List<Review>
                 {
-                    new Review { Id = 1, MovieId = 1, UserId = user1?.Id, Rating = 9, Comment = "Amazing action sequences!" },
-                    new Review { Id = 2, MovieId = 2, UserId = user1?.Id, Rating = 8, Comment = "Hilarious and entertaining." },
-                    new Review { Id = 3, MovieId = 3, UserId = user1?.Id, Rating = 10, Comment = "One of the best movies ever!" },
-                    new Review { Id = 4, MovieId = 4, UserId = user2?.Id, Rating = 9, Comment = "Mind-blowing visuals and concept." },
-                    new Review { Id = 5, MovieId = 5, UserId = user2?.Id, Rating = 7, Comment = "Scary and intense." },
-                    new Review { Id = 6, MovieId = 6, UserId = user3?.Id, Rating = 10, Comment = "Heartbreaking and beautiful." },
-                    new Review { Id = 7, MovieId = 7, UserId = user3?.Id, Rating = 9, Comment = "Epic fantasy adventure!" },
-                    new Review { Id = 8, MovieId = 6, UserId = user3?.Id, Rating = 10, Comment = "Beautiful!!." },
-                    new Review { Id = 9, MovieId = 7, UserId = user3?.Id, Rating = 9, Comment = "Enjoyed it!" }
+                    new Review {MovieId = 1, UserId = user1?.Id, Rating = 9, Comment = "Amazing action sequences!" },
+                    new Review { MovieId = 2, UserId = user1?.Id, Rating = 8, Comment = "Hilarious and entertaining." },
+                    new Review {  MovieId = 3, UserId = user1?.Id, Rating = 10, Comment = "One of the best movies ever!" },
+                    new Review {  MovieId = 4, UserId = user2?.Id, Rating = 9, Comment = "Mind-blowing visuals and concept." },
+                    new Review {  MovieId = 5, UserId = user2?.Id, Rating = 7, Comment = "Scary and intense." },
+                    new Review {  MovieId = 6, UserId = user3?.Id, Rating = 10, Comment = "Heartbreaking and beautiful." },
+                    new Review {  MovieId = 7, UserId = user3?.Id, Rating = 9, Comment = "Epic fantasy adventure!" },
+                    new Review {  MovieId = 6, UserId = user3?.Id, Rating = 10, Comment = "Beautiful!!." },
+                    new Review {  MovieId = 7, UserId = user3?.Id, Rating = 9, Comment = "Enjoyed it!" }
                 };
 
                 await context.Reviews.AddRangeAsync(reviews);
