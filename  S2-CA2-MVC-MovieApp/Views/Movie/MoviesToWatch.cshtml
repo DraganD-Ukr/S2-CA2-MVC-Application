@@ -1,0 +1,45 @@
+﻿@model S2_CA2_MVC_MovieApp.Models.ToWatchList
+
+@{
+    ViewData["Title"] = "My Watchlist";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">🎬 My Watchlist</h2>
+
+    @if (Model != null && Model.Movies.Any())
+    {
+        <div class="list-group">
+            @foreach (var movie in Model.Movies)
+            {
+                <div class="list-group-item d-flex justify-content-between align-items-start mb-3">
+                    <div class="d-flex align-items-center">
+                        <!-- Smaller image with a fixed size -->
+                        <img src="@movie.ImageUrl" class="img-thumbnail" alt="@movie.Title Image" style="width: 80px; height: 120px; object-fit: cover;" />
+                        <div class="ms-3">
+                            <h5 class="mb-1 text-primary">@movie.Title</h5>
+                            <p class="mb-1">
+                                <strong>Genre:</strong> @movie.Genre.Name <br>
+                                <strong>Release Date:</strong> @movie.ReleaseDate.ToString("MMMM dd, yyyy") <br>
+                                <strong>Description:</strong> @movie.Description
+                            </p>
+                            <a href="@movie.TrailerUrl" target="_blank" class="btn btn-info btn-sm">
+                                <i class="bi bi-play-circle"></i> Watch Trailer
+                            </a>
+                        </div>
+                    </div>
+                    <form asp-action="RemoveFromWatchlist" method="post">
+                        <input type="hidden" name="movieId" value="@movie.Id" />
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="bi bi-trash"></i> Remove
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">Your watchlist is empty.</div>
+    }
+</div>

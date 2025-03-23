@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using S2_CA2_MVC_MovieApp.Data;
+using S2_CA2_MVC_MovieApp.Dto;
 using S2_CA2_MVC_MovieApp.Models;
 
 using S2_CA2_MVC_MovieApp.ViewModel;
@@ -14,11 +15,11 @@ namespace S2_CA2_MVC_MovieApp.Controllers
         private readonly ILogger<MovieController> _logger;
         private readonly SignInManager<User> _signInManager;
 
-        public MovieController(ILogger<MovieController> logger, ApplicationDbContext dbContext, SignInManager<User> _signInManager)
+        public MovieController(ILogger<MovieController> logger, ApplicationDbContext dbContext, SignInManager<User> signInManager)
         {
             _logger = logger;
             _dbContext = dbContext;
-            _signInManager = _signInManager;
+            _signInManager = signInManager;
         }
 
         public IActionResult Index()
@@ -77,20 +78,73 @@ namespace S2_CA2_MVC_MovieApp.Controllers
             return View("MovieDetails", movie);
         }
 
-        
-        
-        // [HttpPost]
-        // public IActionResult AddToWatchList(int id) {
-        //     
-        //     if (!_signInManager.IsSignedIn(User)) {
-        //         return RedirectToAction("Search", "Movie");
-        //     }
-        //
-        //     String userId = _signInManager.UserManager.GetUserId(User);
-        //     
-        //     
-        //     
-        // }
+
+        [HttpPost]
+        public IActionResult AddToWatchMovie(int id) {
+            
+            if (!_signInManager.IsSignedIn(User)) {
+                return RedirectToAction("Search", "Movie");
+            }
+            
+            String userId = _signInManager.UserManager.GetUserId(User);
+            
+            //Get users ToWatchList            
+            ToWatchList toWatchList = _dbContext.ToWatchLists
+                .Include(twl => twl.Movies)
+                .FirstOrDefault(twl => twl.UserId == userId);
+            
+            
+            if (toWatchList == null) {
+                toWatchList = new ToWatchList
+                {
+                    UserId = userId,
+                    Movies = new List<Movie>()
+                };
+            }
+            
+            
+            Movie movie = _dbContext.Movies.Find(id);
+            
+            if (movie == null) {
+                return NotFound();
+            }
+            
+            toWatchList.Movies.Add(movie);
+            
+            _dbContext.ToWatchLists.Update(toWatchList);
+            
+            _dbContext.SaveChanges();
+            
+            return View("MoviesToWatch", toWatchList);
+                
+        }
+
+        public async Task<IActionResult> GetToWatchMovies() {
+    
+            if (!_signInManager.IsSignedIn(User)) {
+                return RedirectToAction("Search", "Movie");
+            }
+
+            string userId = _signInManager.UserManager.GetUserId(User);
+    
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Search", "Movie");
+            }
+
+            var toWatchList = await _dbContext.ToWatchLists
+                .Where(twl => twl.UserId == userId)
+                .Include(twl => twl.Movies)
+                .ThenInclude(m => m.Genre)
+                .FirstOrDefaultAsync();
+
+            if (toWatchList == null || !toWatchList.Movies.Any())
+            {
+                return View(new ToWatchList()); // Return an empty list to avoid null reference errors
+            }
+
+            return View("MoviesToWatch", toWatchList);
+        }
         
         
     }
