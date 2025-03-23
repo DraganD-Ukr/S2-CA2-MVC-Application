@@ -28,8 +28,8 @@
                             </a>
                         </div>
                     </div>
-                    <form asp-action="RemoveFromWatchlist" method="post">
-                        <input type="hidden" name="movieId" value="@movie.Id" />
+                    <form asp-action="RemoveFromToWatchList" method="post">
+                        <input type="hidden" name="id" value="@movie.Id" />
                         <button type="submit" class="btn btn-danger btn-sm">
                             <i class="bi bi-trash"></i> Remove
                         </button>

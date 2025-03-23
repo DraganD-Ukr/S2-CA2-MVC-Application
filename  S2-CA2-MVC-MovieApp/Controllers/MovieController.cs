@@ -147,5 +147,42 @@ namespace S2_CA2_MVC_MovieApp.Controllers
         }
         
         
+        [HttpPost]
+        public async Task<IActionResult> RemoveFromToWatchList(int id) {
+            
+            if (!_signInManager.IsSignedIn(User)) {
+                return RedirectToAction("Search", "Movie");
+            }
+            
+            string userId = _signInManager.UserManager.GetUserId(User);
+            
+            if (string.IsNullOrEmpty(userId)) {
+                return RedirectToAction("Search", "Movie");
+            }
+            
+            var toWatchList = await _dbContext.ToWatchLists
+                .Where(twl => twl.UserId == userId)
+                .Include(twl => twl.Movies)
+                .FirstOrDefaultAsync();
+            
+            if (toWatchList == null) {
+                return RedirectToAction("Search", "Movie");
+            }
+            
+            Movie movie = toWatchList.Movies.FirstOrDefault(m => m.Id == id);
+            
+            if (movie == null) {
+                return RedirectToAction("Search", "Movie");
+            }
+            
+            toWatchList.Movies.Remove(movie);
+            
+            _dbContext.ToWatchLists.Update(toWatchList);
+            await _dbContext.SaveChangesAsync();
+            
+            return RedirectToAction("GetToWatchMovies");
+        }
+        
+        
     }
 }
