@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using S2_CA2_MVC_MovieApp.Data;
 using S2_CA2_MVC_MovieApp.Models;
@@ -11,11 +12,13 @@ namespace S2_CA2_MVC_MovieApp.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly ILogger<MovieController> _logger;
+        private readonly SignInManager<User> _signInManager;
 
-        public MovieController(ILogger<MovieController> logger, ApplicationDbContext dbContext)
+        public MovieController(ILogger<MovieController> logger, ApplicationDbContext dbContext, SignInManager<User> _signInManager)
         {
             _logger = logger;
             _dbContext = dbContext;
+            _signInManager = _signInManager;
         }
 
         public IActionResult Index()
@@ -44,8 +47,7 @@ namespace S2_CA2_MVC_MovieApp.Controllers
                 movies = _dbContext.Movies
                     .Include(m => m.Genre) // Ensure Genre is included
                     .Include(m => m.Reviews) // Ensure Reviews are included
-                    .Where(m => m.Title.ToLower().Contains(searchTerm.ToLower()) || 
-                                m.Description.ToLower().Contains(searchTerm.ToLower()))
+                    .Where(m => m.Title.ToLower().Contains(searchTerm.ToLower()) )
                     .OrderBy(m => m.Title)
                     .ToList();
 
@@ -74,5 +76,22 @@ namespace S2_CA2_MVC_MovieApp.Controllers
 
             return View("MovieDetails", movie);
         }
+
+        
+        
+        // [HttpPost]
+        // public IActionResult AddToWatchList(int id) {
+        //     
+        //     if (!_signInManager.IsSignedIn(User)) {
+        //         return RedirectToAction("Search", "Movie");
+        //     }
+        //
+        //     String userId = _signInManager.UserManager.GetUserId(User);
+        //     
+        //     
+        //     
+        // }
+        
+        
     }
 }

@@ -43,13 +43,12 @@ if (app.Environment.IsDevelopment())
     using (var scope = app.Services.CreateScope())
     {
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        context.Database.EnsureCreated(); // Create the database if not already created
+        context.Database.EnsureCreated(); 
         
         var services = scope.ServiceProvider;
         var dbContext = services.GetRequiredService<ApplicationDbContext>();
     
-        // Create the database and apply the schema
-        dbContext.Database.EnsureCreated(); // This ensures the tables are created
+
     
         // Seed only if the database is empty
         if (!dbContext.Users.Any()) {
@@ -59,6 +58,8 @@ if (app.Environment.IsDevelopment())
         if (!dbContext.Reviews.Any()) {
             await dbContext.SeedReviewsAsync(dbContext, services.GetRequiredService<UserManager<User>>());
         }
+
+        await dbContext.SeedToWatchListAsync(dbContext, services.GetRequiredService<UserManager<User>>());
         
     }
 }

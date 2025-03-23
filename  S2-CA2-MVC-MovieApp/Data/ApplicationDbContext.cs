@@ -15,6 +15,7 @@ namespace S2_CA2_MVC_MovieApp.Data
         public DbSet<Movie?> Movies { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<ToWatchList> ToWatchLists { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,7 +55,6 @@ namespace S2_CA2_MVC_MovieApp.Data
                 new Movie { Id = 9, Title = "The Dark Knight", Description = "Batman battles the Joker to save Gotham City.", ReleaseDate = new DateTime(2008, 7, 18, 0, 0, 0, DateTimeKind.Utc), GenreId = 8, ImageUrl = "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTfE_qrYMBZ_JB8om-34WGaZARhpX26yWRttqIDvn4_7l--UzX8mxKcPrc59IcvTpEA_G8gPA", TrailerUrl = "https://www.youtube.com/watch?v=EXeTwQWrcwY&ab_channel=RottenTomatoesClassicTrailers"},
                 new Movie { Id = 10, Title = "Finding Nemo", Description = "A clownfish searches for his lost son.", ReleaseDate = new DateTime(2003, 5, 30, 0, 0, 0, DateTimeKind.Utc), GenreId = 9, ImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_L85MrBiZe4VhDdeGczFkEryBaUSm9OxNBW79a2ABLzpLCTdH5qasRt11inzqTTUXk2-G", TrailerUrl = "https://www.youtube.com/watch?v=SPHfeNgogVs&ab_channel=Pixar"}
             );
-            
 
         }
 
@@ -113,8 +113,8 @@ namespace S2_CA2_MVC_MovieApp.Data
 
                 var reviews = new List<Review>
                 {
-                    new Review {MovieId = 1, UserId = user1?.Id, Rating = 9, Comment = "Amazing action sequences!" },
-                    new Review { MovieId = 2, UserId = user1?.Id, Rating = 8, Comment = "Hilarious and entertaining." },
+                    new Review {  MovieId = 1, UserId = user1?.Id, Rating = 9, Comment = "Amazing action sequences!" },
+                    new Review {  MovieId = 2, UserId = user1?.Id, Rating = 8, Comment = "Hilarious and entertaining." },
                     new Review {  MovieId = 3, UserId = user1?.Id, Rating = 10, Comment = "One of the best movies ever!" },
                     new Review {  MovieId = 4, UserId = user2?.Id, Rating = 9, Comment = "Mind-blowing visuals and concept." },
                     new Review {  MovieId = 5, UserId = user2?.Id, Rating = 7, Comment = "Scary and intense." },
@@ -127,6 +127,48 @@ namespace S2_CA2_MVC_MovieApp.Data
                 await context.Reviews.AddRangeAsync(reviews);
                 await context.SaveChangesAsync();
             }
+        }
+
+        public async Task SeedToWatchListAsync(ApplicationDbContext context, UserManager<User> userManager) {
+            
+            
+            if (!context.ToWatchLists.Any()) 
+            {
+                var user1 = await userManager.FindByNameAsync("user1@example.com");
+                var user2 = await userManager.FindByNameAsync("user2@example.com");
+
+                if (user1 == null || user2 == null)
+                    throw new Exception("One or both users not found.");
+
+                // Get the first 10 movies
+                var movies = await context.Movies.Include(m => m.Genre).Take(10).ToListAsync();
+
+                if (movies.Count < 10)
+                    throw new Exception("Not enough movies in the database.");
+
+                // Assign first 5 movies to user1, last 5 to user2
+                var toWatchLists = new List<ToWatchList>
+                {
+                    new ToWatchList 
+                    { 
+                        UserId = user1.Id, 
+                        Movies = movies.Take(5).ToList(), // First 5 movies
+                        LastUpdatedAt = DateTime.UtcNow
+                    },
+                    new ToWatchList 
+                    { 
+                        UserId = user2.Id, 
+                        Movies = movies.Skip(5).Take(5).ToList(), // Last 5 movies
+                        LastUpdatedAt = DateTime.UtcNow
+                    }
+                };
+
+                // Add to the database
+                await context.ToWatchLists.AddRangeAsync(toWatchLists);
+                await context.SaveChangesAsync();
+            }
+            
+            
         }
 
 

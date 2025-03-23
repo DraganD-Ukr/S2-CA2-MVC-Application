@@ -214,7 +214,13 @@
                                         <h6 class="card-title">"Anonymous"</h6>
                                     }
                                     <p><strong>Rating:</strong> @review.Rating / 10</p>
-                                    <p>@review.Comment ?? "No comment"</p>
+                                    @if (review.Comment != null){
+                                        <p>@review.Comment</p>
+                                    }
+                                    else {
+                                        <p>No comment</p>
+                                    }
+                                    
                                 </div>
                             </div>
                         }
